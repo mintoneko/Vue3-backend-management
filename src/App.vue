@@ -2,10 +2,16 @@
 </script>
 
 <template>
-  <!-- 需要添加上router-view启用router -->
+  <div></div>
+  <!-- 需要添加上router-view启用router,也就是放置路由出口 -->
   <router-view></router-view>
   <!-- <RouterView /> -->
-
 </template>
 
-<style scoped></style>
+<style>
+#app {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+</style>

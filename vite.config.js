@@ -13,12 +13,5 @@ export default defineConfig({
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
     },
-    // 别名，方便引入文件
-    /*
-    alias: {
-      find: '@',
-      replacement: "/src"
-    }
-    */
   },
 })
