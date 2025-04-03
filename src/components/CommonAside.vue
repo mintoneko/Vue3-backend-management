@@ -60,7 +60,7 @@ const isWidth = computed(() => store.state.isCollapse ? '64px' : '180px')
   <!-- 这里利用Vue绑定需要加上: -->
   <el-aside :width=isWidth>
     <!-- 注意这里修改element组件样式，不是使用style，直接使用绑定 -->
-    <el-menu background-color="#545c64" text-color="#fff" :collapse="isCollapse">
+    <el-menu background-color="#545c64" text-color="#fff" :collapse="isCollapse" :collapse-transition="false">
       <h3 v-show="!isCollapse">通用后台管理系统</h3>
       <h3 v-show="isCollapse">后台</h3>
       <el-menu-item v-for="item in noChildren" :key="item.path" :index="item.path">

@@ -316,3 +316,34 @@ export const useAllDateState = defineStore('main', () => {
 
 注意`el-menu`的`:collapse="isCollapse"`这个属性
 
+过渡属性：`:collapse-transition="false"`打开之后过渡就比较丝滑
+
+### 子路由管理
+
+- Home
+
+
+
+### 封装axios
+
+https://www.axios-http.cn/docs/intro
+
+```js
+axios({
+  method: "get",
+  url: "/api/home/getTableDate",
+})
+  .then((res) => {
+    console.log(res.data)
+  });
+```
+
+安装好依赖之后就可以直接使用了
+
+
+
+### 导入Mock
+
+https://github.com/nuysoft/Mock/wiki/Getting-Started
+
+阿里开源的前端请求工具

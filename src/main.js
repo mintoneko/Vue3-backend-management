@@ -15,6 +15,9 @@ import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 // 导入pinia持久化插件
 
+import "@/api/mock.js"
+// 导入mock
+
 const app = createApp(App)
 
 const pinia = createPinia()

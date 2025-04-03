@@ -3,7 +3,7 @@ import { ref, computed } from 'vue'
 
 // 动态引入图片
 const getImageUrl = (user) => {
-  return new URL(`../assets/images/${user}`, import.meta.url).href
+  return new URL(`../assets/images/${user}.png`, import.meta.url).href
 }
 
 // 状态控制
@@ -24,9 +24,9 @@ function handleCollapse() {
       </el-button>
       <el-breadcrumb separator="/" class="bread">
         <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-        <el-breadcrumb-item v-if="current" :to="current.path">{{
-          current.label
-          }}</el-breadcrumb-item>
+        <el-breadcrumb-item v-if="current" :to="current.path">
+          {{ current.label }}
+        </el-breadcrumb-item>
       </el-breadcrumb>
     </div>
 
