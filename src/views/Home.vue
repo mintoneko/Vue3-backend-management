@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onBeforeMount, getCurrentInstance } from 'vue'
+import { ref, onMounted, getCurrentInstance } from 'vue'
 const { proxy } = getCurrentInstance()
 
 const getImageUrl = (user) => {
@@ -27,19 +27,19 @@ const getTableData = async () => {
 const getCountData = async () => {
   const data = await proxy.$api.getCountData();
   console.log(data);
-  countData.value = data.tableData;
+  countData.value = data;
 }
 
-onBeforeMount(() => {
-  getTableData()
-  getCountData()
+onMounted(() => {
+  getTableData(),
+    getCountData()
 })
-// 这里用onMounted也可以  
 </script>
 
 <template>
   <el-row class="home" :gutter="20">
     <el-col :span="8" style="margin-top: 20px">
+      <!-- 左上角内容 -->
       <el-card shadow="hover" class="temp">
         <div class="user">
           <img :src="getImageUrl('user')" class="user" />
@@ -53,7 +53,7 @@ onBeforeMount(() => {
           <p>上次登录地点:<span>北京</span></p>
         </div>
       </el-card>
-
+      <!-- 左下角数据 -->
       <el-card shadow="hover" class="table">
         <el-table :data="tableData">
           <el-table-column v-for="(val, key) in tableLabel" :key="key" :prop="key" :label="val">
@@ -61,6 +61,18 @@ onBeforeMount(() => {
         </el-table>
         <!-- 利用el的表格快速搭建 -->
       </el-card>
+
+    </el-col>
+    <el-col :span="16" style="margin-top: 20px">
+      <div class="num">
+        <el-card :body-style="{ display: 'flex', padding: 0 }" v-for="item in countData" :key="item.name">
+          <component :is="item.icon" class="icons" :style="{ background: item.color }" />
+          <div class="detail">
+            <p class="num">¥{{ item.value }}</p>
+            <p class="txt">¥{{ item.name }}</p>
+          </div>
+        </el-card>
+      </div>
     </el-col>
   </el-row>
 </template>
@@ -81,7 +93,6 @@ onBeforeMount(() => {
       height: 150px;
       border-radius: 50%;
       margin-right: 40px;
-
     }
 
     .user-info {
@@ -110,10 +121,6 @@ onBeforeMount(() => {
         margin-left: 60px;
       }
     }
-  }
-
-  .temp {
-    margin-bottom: 20px;
   }
 
   .user-table {
