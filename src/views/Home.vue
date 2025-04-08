@@ -1,26 +1,15 @@
 <script setup>
-import { ref } from 'vue'
-import axios from 'axios'
+import { ref, onBeforeMount, getCurrentInstance } from 'vue'
+const { proxy } = getCurrentInstance()
 
 const getImageUrl = (user) => {
   return new URL(`../assets/images/${user}.png`, import.meta.url).href
 }
 
 //假数据，等会我们使用axios请求mock数据
-const tableData = ref([
-  {
-    name: "Java",
-    todayBuy: 100,
-    monthBuy: 200,
-    totalBuy: 300,
-  },
-  {
-    name: "Python",
-    todayBuy: 100,
-    monthBuy: 200,
-    totalBuy: 300,
-  }
-])
+const tableData = ref([]);
+
+const countData = ref([])
 
 // 表格表头
 const tableLabel = ref({
@@ -30,15 +19,22 @@ const tableLabel = ref({
   totalBuy: "总购买",
 })
 
-axios({
-  method: "get",
-  url: "/api/home/getTableData",
+const getTableData = async () => {
+  const data = await proxy.$api.getTableData();
+  tableData.value = data.tableData;
+}
+
+const getCountData = async () => {
+  const data = await proxy.$api.getCountData();
+  console.log(data);
+  countData.value = data.tableData;
+}
+
+onBeforeMount(() => {
+  getTableData()
+  getCountData()
 })
-  .then((res) => {
-    if (res.data.code === 200) {
-      tableData.value = res.data.data.tableData;
-    }
-  });
+// 这里用onMounted也可以  
 </script>
 
 <template>

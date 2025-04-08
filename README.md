@@ -322,7 +322,30 @@ export const useAllDateState = defineStore('main', () => {
 
 - Home
 
+```js
+const routes = [
+  {
+    path: "/",
+    name: "Main",
+    component: () => import("../views/Main.vue"),
+    redirect: "/home",
+    children: [
+      {
+        // 注意这里不要有/
+        path: "home",
+        name: "Home",
+        component: () => import("../views/Home.vue"),
+      },
+    ]
+  }
+]
+```
 
+配置好子路由后需要在对应位置放路由出口
+
+```js
+<view-router></view-router>
+```
 
 ### 封装axios
 
@@ -340,10 +363,181 @@ axios({
 
 安装好依赖之后就可以直接使用了
 
-
-
 ### 导入Mock
 
 https://github.com/nuysoft/Mock/wiki/Getting-Started
 
 阿里开源的前端请求工具
+
+```js
+import Mock from 'mockjs'
+import home from '@/api/data/home'
+
+console.log("mock start...")
+Mock.mock('/api/home/getTableData', 'get', home.getTableData)
+```
+
+### 二次封装axios
+
+> 实现自定义相应请求器和拦截器
+
+```js
+import axios from 'axios';
+import { ElMessage } from 'element-plus';
+const service = axios.create();
+
+// 添加请求拦截器
+service.interceptors.request.use(function (config) {
+  return config;
+}, function (error) {
+  return Promise.reject(error);
+});
+
+// 添加响应拦截器
+service.interceptors.response.use((res) => {
+  const { code, data, msg } = res.data;
+  if (code == 200) {
+    return data;
+  }
+  else {
+    const NETWORD_ERROR = '网络错误...';
+    ElMessage.error(msg || NETWORD_ERROR);
+    return Promise.reject(new Error(msg || NETWORD_ERROR));
+  }
+});
+
+function request(options) {
+  options.method = options.method || 'get';
+  return service(options);
+}
+
+export default request;
+// 导出request
+```
+
+然后统一写入api.js进行管理
+
+```js
+/**
+ * 整个项目的api接口统一管理
+ */
+
+import request from "./request";
+
+// 获取首页左下角数据
+export function getTableData() {
+  return request({
+    url: '/api/home/getTableData',
+    method: 'get'
+  })
+}
+```
+
+全局注册api
+
+```js
+import api from '@/api/api.js'
+
+app.config.globalProperties.$api = api
+// 注册全局属性$api，方便在组件中使用->通过this.$api调用api.js中的方法
+```
+
+替换之前Home.vue组件中直接用axios请求的部分代码
+
+原
+
+```js
+axios({
+  method: "get",
+  url: "/api/home/getTableData",
+})
+  .then((res) => {
+    if (res.data.code === 200) {
+      tableData.value = res.data.data.tableData;
+    }
+  });
+```
+
+改
+
+```js
+const getTableData = async () => {
+  const data = await proxy.$api.getTableData();
+  tableData.value = data.tableData;
+}
+
+onMounted(() => {
+  getTableData()
+})
+```
+
+### 统一管理mock地址
+
+> 简历加分项
+
+添加@/config/index.js
+
+```js
+/**
+ * 环境配置文件
+ * 一般在企业级项目里面有三个环境
+ * 开发环境-dev
+ * 测试环境-test
+ * 线上环境-prod
+ */
+
+// 当前的环境
+const env = import.meta.env.MODE || 'prod'
+
+const EnvConfig = {
+  development: {
+    baseApi: '/api',
+    mockApi: 'https://mock.apifox.cn/m1/4068509-0-default/api',
+  },
+  test: {
+    baseApi: '//test.future.com/api',
+    mockApi: 'https://mock.apifox.cn/m1/4068509-0-default/api',
+  },
+  prod: {
+    baseApi: '//future.com/api',
+    mockApi: 'https://mock.apifox.cn/m1/4068509-0-default/api',
+  },
+}
+
+export default {
+  env,
+  mock: false,
+  ...EnvConfig[env]
+}
+```
+
+修改request部分
+
+```js
+const service = axios.create({
+  baseURL: config.baseApi,
+});
+
+function request(options) {
+  options.method = options.method || 'get';
+  // 关于GET请求参数的调整
+  if (options.method.toLowerCase() === "get") {
+    options.params = options.data;
+  }
+  // 对mock开关的处理
+  let isMock = config.mock;
+  if (typeof options.mock !== "undefined") {
+    isMock = options.mock;
+  }
+  // 针对环境做处理
+  if (config.env === "prod") {
+    // 生产环境禁用mock
+    service.defaults.baseURL = config.baseApi;
+  } else {
+    service.defaults.baseURL = isMock ? config.mockApi : config.baseApi;
+  }
+  return service(options);
+}
+```
+
+> 真实开发环境的多种api地址处理方式

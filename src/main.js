@@ -2,7 +2,6 @@ import '@/assets/less/index.less'
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
-
 import App from './App.vue'
 import router from './router'
 // 默认自动去找下面的index.js
@@ -18,7 +17,13 @@ import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 import "@/api/mock.js"
 // 导入mock
 
+import api from '@/api/api.js'
+// 导入api
+
 const app = createApp(App)
+
+app.config.globalProperties.$api = api
+// 注册全局属性$api，方便在组件中使用->通过this.$api调用api.js中的方法
 
 const pinia = createPinia()
 pinia.use(piniaPluginPersistedstate)
