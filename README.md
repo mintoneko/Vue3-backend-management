@@ -318,7 +318,7 @@ export const useAllDateState = defineStore('main', () => {
 
 过渡属性：`:collapse-transition="false"`打开之后过渡就比较丝滑
 
-### 子路由管理
+### 子路由Home
 
 - Home
 
@@ -341,7 +341,7 @@ const routes = [
 ]
 ```
 
-配置好子路由后需要在对应位置放路由出口
+配置好子路由后需要在对应位置放路由出口：在Main.vue处放置路由出口
 
 ```js
 <view-router></view-router>
@@ -551,5 +551,69 @@ https://echarts.apache.org/zh/index.html
 ```js
 npm install echarts -D
 // -D表示导入项目开发依赖
+```
+
+首先搭建接口，用于请求数据，步骤和前面的一样：data.js -> mock.js -> api.js -> 使用
+
+echarts的使用参考官方文档，和项目中的具体代码，这里不展开
+
+### 子路由User
+
+```js
+import { createRouter, createWebHashHistory } from 'vue-router'
+
+const routes = [
+  {
+    path: "/",
+    name: "Main",
+    component: () => import("../views/Main.vue"),
+    redirect: "/user",
+    children: [
+      {
+        // 注意这里不要有/
+        path: "home",
+        name: "Home",
+        component: () => import("../views/Home.vue"),
+      },
+      {
+        path: "user",
+        name: "User",
+        component: () => import("../views/User.vue"),
+      }
+    ]
+  }
+]
+
+const router = createRouter({
+  history: createWebHashHistory(),
+  routes,
+})
+
+export default router
+```
+
+### User视图
+
+https://element-plus.org/zh-CN/component/table.html
+
+先建立视图查看样式->该用动态数据
+
+```vue
+<el-table :data="tableData" style="width: 100%">
+  <el-table-column 
+    v-for="item in tableLabel" 
+    :key="item.prop" 
+    :prop="item.prop" 
+    :label="item.label"
+    :width="item.width ? item.width : 125" />
+  <el-table-column fixed="right" label="操作" min-width="120">
+    <template #default>
+      <el-button type="primary" size="small" @click="handleClick">
+        编辑
+      </el-button>
+      <el-button type="danger" size="small">删除</el-button>
+    </template>
+  </el-table-column>
+</el-table>
 ```
 

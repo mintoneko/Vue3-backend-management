@@ -5,7 +5,7 @@ const routes = [
     path: "/",
     name: "Main",
     component: () => import("../views/Main.vue"),
-    redirect: "/home",
+    redirect: "/user",
     children: [
       {
         // 注意这里不要有/
@@ -13,6 +13,11 @@ const routes = [
         name: "Home",
         component: () => import("../views/Home.vue"),
       },
+      {
+        path: "user",
+        name: "User",
+        component: () => import("../views/User.vue"),
+      }
     ]
   }
 ]
