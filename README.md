@@ -541,3 +541,15 @@ function request(options) {
 ```
 
 > 真实开发环境的多种api地址处理方式
+
+首页右上角样式略
+
+### echarts图表
+
+https://echarts.apache.org/zh/index.html
+
+```js
+npm install echarts -D
+// -D表示导入项目开发依赖
+```
+

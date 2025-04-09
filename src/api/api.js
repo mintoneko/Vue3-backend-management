@@ -17,5 +17,11 @@ export default {
       url: '/home/getCountData',
       method: 'get'
     })
+  },
+  getChartData() {
+    return request({
+      url: '/home/getChartData',
+      method: 'get'
+    })
   }
 }
